@@ -1,15 +1,17 @@
 <template>
   <div id="app">
     <button
-      v-if="updateExists"
-      @click="refreshApp"
+      @click="makeAjax"
       class="btn"
     >New version available! Click to update</button>
-    <div v-else>There's no update yet.</div>
   </div>
 </template>
 
 <script>
+/* eslint-disable no-console, no-undef */
+
+import apiClient from './api/index.js'
+
 export default {
   name: "app",
   data() {
@@ -19,52 +21,14 @@ export default {
       updateExists: false
     };
   },
-
   created() {
-    // Listen for swUpdated event and display refresh snackbar as required.
-    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
-    // Refresh all open app tabs when a new service worker is installed.
-    navigator.serviceWorker &&
-      navigator.serviceWorker.addEventListener(
-        //triggered by registration.claim
-        "controllerchange",
-        () => {
-          if (this.refreshing) return;
-          this.refreshing = true;
-          console.log("controllerchange triggered, -> auto refresh!!");
-          window.location.reload();
-        }
-      );
+    this.makeAjax();
   },
-
   methods: {
-    showRefreshUI(e) {
-      // Display a button inviting the user to refresh/reload the app due
-      // to an app update being available.
-      // The new service worker is installed, but not yet active.
-      // Store the ServiceWorkerRegistration instance for later use.
-      if (e.detail) {
-        this.worker = e.detail;
-        this.updateExists = true;
-        console.log("Showing refresh button.");
-        console.log(this.worker);
-      } else {
-        console.warn("No worker data found!");
-      }
+    async makeAjax() {
+      const user_data = await apiClient.login();
+      console.log(user_data);
     },
-    refreshApp() {
-      console.log("skipWaiting started");
-      console.log(this.worker);
-      // Handle a user tap on the update app button.
-      this.updateExists = false;
-      // Protect against missing registration.waiting.
-      if (!this.worker) {
-        console.warn("No worker data found when trying to refresh!");
-        return;
-      }
-      this.worker.postMessage({ type: "SKIP_WAITING" });
-      console.log("skipWaiting finished");
-    }
   }
 };
 </script>
