@@ -2,14 +2,17 @@ import axios from 'axios';
 import qs from 'qs';
 
 export const urls = {
-    login: '/api/login',
+    login: '/v1/login',
 };
 
 class ApiClient {
 
     async login() {
 
-        const users_data = await this.request( 'get', urls.login);
+        const users_data = await this.request( 'post', urls.login, {
+            name: "bohdan01",
+            password: "GlobalLogic86",
+        });
 
         return users_data;
     }

@@ -28,7 +28,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   const path = url.pathname;
   const searchParams = url.searchParams;
-  if (isGetRequest(event) && path.includes("/api/login")) {
+  if (isPostRequest(event) && path.includes("/v1/login")) {
     event.respondWith(Promise.resolve(
         new Response(JSON.stringify({ user }), init),
     ));
