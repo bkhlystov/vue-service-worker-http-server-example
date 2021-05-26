@@ -21,9 +21,6 @@ export default {
       updateExists: false
     };
   },
-  created() {
-    this.makeAjax();
-  },
   methods: {
     async makeAjax() {
       const user_data = await apiClient.login();
